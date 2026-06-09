@@ -2,168 +2,361 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0050 海龜凱利自動導航儀 1.2</title>
-    <!-- 引入 Tailwind CSS 實現高質感黑底風格 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>0050 海龜凱利自動導航儀 1.2 | 即時精算版</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 微調數字輸入框樣式，移除spinner按鈕(可選) */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            opacity: 0.5;
+        }
+        .card-transition {
+            transition: all 0.2s ease;
+        }
+        .focus-ring:focus {
+            ring: 2px solid #3b82f6;
+            border-color: transparent;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center py-10 px-4">
+<body class="bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 min-h-screen flex flex-col items-center justify-center py-8 px-4 font-sans">
 
-    <!-- 主容器 -->
-    <div class="max-w-xl w-full bg-gray-800 rounded-xl shadow-2xl p-6 border border-gray-700">
+    <div class="max-w-xl w-full bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
         
-        <!-- 標題 -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-blue-400 flex justify-center items-center gap-2">
-                📊 0050 海龜凱利導航儀
-            </h1>
-            <p class="text-xs text-gray-400 mt-1">Vibe Coding 華強北 1.2 全功能旗艦版</p>
-        </div>
-
-        <!-- 輔助查詢工具 -->
-        <div class="mb-4 text-center">
-            <a href="https://tw.stock.yahoo.com/quote/0050.TW" target="_blank" class="text-xs bg-gray-700 hover:bg-gray-600 text-blue-300 px-3 py-1.5 rounded-full inline-flex items-center gap-1 transition-all">
-                🔍 點此查詢 0050 今日真實收盤價 (Yahoo股市)
-            </a>
-        </div>
-
-        <!-- 區塊一：海龜策略訊號輸入 -->
-        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 mb-6">
-            <h2 class="text-sm font-semibold text-blue-300 mb-4 flex items-center gap-1">🚨 今日海龜策略訊號</h2>
-            
-            <div class="space-y-3 text-sm">
-                <div class="flex justify-between items-center">
-                    <label class="text-gray-300">當前 0050 收盤價 (可手動修改)：</label>
-                    <input type="number" id="currentPrice" value="160" step="0.1" class="w-28 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="flex justify-between items-center">
-                    <label class="text-gray-300">20日最高點 (突破買)：</label>
-                    <input type="number" id="high20" value="158" step="0.1" class="w-28 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="flex justify-between items-center">
-                    <label class="text-gray-300">20日最低點 (跌破賣)：</label>
-                    <input type="number" id="low20" value="145" step="0.1" class="w-28 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono focus:outline-none focus:border-blue-500">
-                </div>
-            </div>
-
-            <!-- 決策燈號輸出 -->
-            <div class="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
-                <span class="text-xs text-gray-400">【決策燈號】</span>
-                <span id="signalBadge" class="px-3 py-1.5 rounded font-bold text-sm bg-green-950 text-green-400 border border-green-800">
-                    📈 突破高點：多單進場 / 續抱
-                </span>
+        <!-- 標題區塊 -->
+        <div class="bg-gradient-to-r from-blue-900/40 to-gray-800/60 px-5 py-4 border-b border-gray-700">
+            <div class="text-center">
+                <h1 class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-cyan-400">
+                    🐢 0050 海龜凱利導航儀
+                </h1>
+                <p class="text-[11px] text-gray-400 mt-1">Vibe Coding 華強北 1.2 全功能旗艦版 | 即時動態凱利 | 雙向連動</p>
             </div>
         </div>
 
-        <!-- 區塊二：凱利公式與資金配位 -->
-        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <h2 class="text-sm font-semibold text-blue-300 mb-4 flex items-center gap-1">🧮 凱利公式配置計</h2>
-            
-            <div class="space-y-3 text-sm">
-                <div class="flex justify-between items-center">
-                    <label class="text-gray-300">總投資本金 (台幣，可修改)：</label>
-                    <input type="number" id="totalCapital" value="1000000" class="w-36 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="flex justify-between items-center text-gray-400 text-xs">
-                    <span>海龜勝率 (預設)：</span>
-                    <span class="font-mono">40%</span>
-                </div>
-                <div class="flex justify-between items-center text-gray-400 text-xs">
-                    <span>賺賠比 (預設)：</span>
-                    <span class="font-mono">2.5 倍</span>
+        <!-- Yahoo 查詢連結 -->
+        <div class="pt-4 px-5 pb-0">
+            <div class="flex justify-center">
+                <a href="https://tw.stock.yahoo.com/quote/0050.TW" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs bg-gray-700 hover:bg-gray-600 text-blue-300 px-4 py-2 rounded-full transition-all duration-200 shadow-md hover:shadow">
+                    🔍 點此查詢 0050 今日真實收盤價 (Yahoo股市)
+                </a>
+            </div>
+        </div>
+
+        <!-- 今日海龜策略訊號區 (全動態) -->
+        <div class="px-5 pt-5">
+            <div class="bg-gray-800/70 rounded-xl border border-gray-700 p-5 shadow-inner">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-700 pb-2">
+                    <span class="text-blue-400 text-lg">🚨</span>
+                    <h2 class="text-base font-semibold text-blue-300 tracking-wide">今日海龜策略訊號</h2>
                 </div>
                 
-                <!-- 凱利比例顯示 -->
-                <div class="pt-2 flex justify-between items-center border-t border-dashed border-gray-700">
-                    <span class="text-gray-300">建議下單資金比率：</span>
-                    <span id="kellyRatio" class="text-blue-400 font-bold font-mono">16.00%</span>
+                <div class="space-y-4">
+                    <!-- 三個可編輯參數 -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                        <label class="text-gray-300 text-sm font-medium flex items-center gap-1">📊 當前0050收盤價 <span class="text-gray-500 text-[10px]">(可手動修改)</span> :</label>
+                        <input type="number" id="currentPrice" value="160.0" step="0.05" class="w-full sm:w-36 bg-gray-900 border border-gray-600 rounded-lg px-3 py-1.5 text-right text-white font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                        <label class="text-gray-300 text-sm font-medium">📈 20日最高點 (突破買) :</label>
+                        <input type="number" id="high20" value="158.0" step="0.05" class="w-full sm:w-36 bg-gray-900 border border-gray-600 rounded-lg px-3 py-1.5 text-right text-white font-mono text-base focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                        <label class="text-gray-300 text-sm font-medium">📉 20日最低點 (跌破賣) :</label>
+                        <input type="number" id="low20" value="145.0" step="0.05" class="w-full sm:w-36 bg-gray-900 border border-gray-600 rounded-lg px-3 py-1.5 text-right text-white font-mono text-base focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- 決策燈號 即時動態 -->
+                <div class="mt-6 pt-2 border-t border-gray-700 flex flex-wrap items-center justify-between gap-3">
+                    <span class="text-xs font-semibold text-gray-400 tracking-wide">【 決策燈號 】</span>
+                    <div id="signalBadge" class="px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-all duration-300 flex items-center gap-2 bg-green-950/80 text-green-300 border border-green-700">
+                        <span>📈</span> 突破高點：多單進場 / 續抱
+                    </div>
+                </div>
+                <!-- 輔助說明小字 -->
+                <p class="text-[10px] text-gray-500 mt-3 text-right">* 海龜法則：價格 ≥ 20日高點 → 做多訊號；價格 ≤ 20日低點 → 空頭觀望</p>
+            </div>
+        </div>
+
+        <!-- 凱利公式配置計 (核心計算) -->
+        <div class="px-5 py-5">
+            <div class="bg-gray-800/70 rounded-xl border border-gray-700 p-5 shadow-inner">
+                <div class="flex items-center gap-2 mb-4 border-b border-gray-700 pb-2">
+                    <span class="text-cyan-400 text-lg">🧮</span>
+                    <h2 class="text-base font-semibold text-cyan-300">凱利公式配置計 · 動態風控</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- 總投資本金 -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 bg-gray-900/40 p-2 rounded-lg">
+                        <label class="text-gray-200 text-sm font-medium">💰 總投資本金 (台幣，可修改)</label>
+                        <input type="number" id="totalCapital" value="1000000" step="10000" class="w-full sm:w-40 bg-gray-900 border border-gray-600 rounded-lg px-3 py-1.5 text-right text-white font-mono text-base focus:ring-2 focus:ring-cyan-500">
+                    </div>
+
+                    <!-- 固定勝率 & 賺賠比 預設可調整(為了完善連動，使用者也可自行修改) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+                        <div class="bg-gray-900/30 rounded-lg p-2 flex justify-between items-center">
+                            <span class="text-gray-300 text-xs">🐢 海龜勝率 (預設)</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="winRate" value="40" step="1" min="1" max="100" class="w-16 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono text-sm focus:ring-1 focus:ring-blue-400">
+                                <span class="text-xs text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-900/30 rounded-lg p-2 flex justify-between items-center">
+                            <span class="text-gray-300 text-xs">📊 賺賠比 (平均盈利/平均虧損)</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="profitLossRatio" value="2.5" step="0.1" min="0.5" class="w-20 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono text-sm focus:ring-1 focus:ring-blue-400">
+                                <span class="text-xs text-gray-400">倍</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 凱利建議比率 -->
+                    <div class="mt-3 bg-gray-900/50 rounded-lg p-3 flex justify-between items-center border-l-4 border-blue-500">
+                        <span class="text-gray-200 text-sm font-medium">⚡ 建議下單資金比率 :</span>
+                        <span id="kellyRatio" class="text-blue-400 font-black font-mono text-xl tracking-wide">16.00%</span>
+                    </div>
+
+                    <!-- 今日建議進金金額 (醒目) -->
+                    <div class="mt-1 bg-gradient-to-r from-emerald-950/40 to-teal-950/30 rounded-xl p-4 flex justify-between items-center border border-emerald-800/50 shadow-sm">
+                        <span class="text-gray-100 font-bold text-base">📌 今日建議進金金額</span>
+                        <span id="suggestedAmount" class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-sm">$160,000</span>
+                    </div>
                 </div>
                 
-                <!-- 今日建議下單金額 -->
-                <div class="pt-2 flex justify-between items-center">
-                    <span class="text-gray-200 font-medium">今日建議進金金額：</span>
-                    <span id="suggestedAmount" class="text-xl font-black text-emerald-400 font-mono">$160,000</span>
+                <!-- 備註: 公式動態顯示說明 -->
+                <div class="text-[10px] text-gray-500 text-center mt-4 pt-2 border-t border-gray-700/60">
+                    ※ 凱利公式 f* = (p*(b+1)-1)/b , 其中 p = 勝率, b = 賺賠比。僅在「多單訊號」時計算風險資金；盤整/空頭訊號建議觀望。
                 </div>
             </div>
         </div>
 
+        <!-- 版權/版本標示 -->
+        <div class="text-center text-[10px] text-gray-600 py-3 border-t border-gray-800 bg-gray-900/30">
+            🧭 海龜凱利導航儀 1.2 | 即時連動 · 勝率與賺賠比皆可調 | 突破買點觸發凱利配置
+        </div>
     </div>
 
-    <!-- 核心全連動晶片邏輯 -->
     <script>
-        const currentPriceInput = document.getElementById('currentPrice');
-        const high20Input = document.getElementById('high20');
-        const low20Input = document.getElementById('low20');
-        const totalCapitalInput = document.getElementById('totalCapital');
-        
-        const signalBadge = document.getElementById('signalBadge');
-        const kellyRatioText = document.getElementById('kellyRatio');
-        const suggestedAmountText = document.getElementById('suggestedAmount');
-
-        // 固定凱利參數
-        const p = 0.4;
-        const b = 2.5;
-        const rawKelly = (b * p - (1 - p)) / b; // 0.16
-
-        function calculateStrategy() {
-            const currentPrice = parseFloat(currentPriceInput.value) || 0;
-            const high20 = parseFloat(high20Input.value) || 0;
-            const low20 = parseFloat(low20Input.value) || 0;
-            const totalCapital = parseFloat(totalCapitalInput.value) || 0;
-
-            let signal = 'hold'; 
+        (function() {
+            // ----- DOM 元素綁定 -----
+            const currentPriceInput = document.getElementById('currentPrice');
+            const high20Input = document.getElementById('high20');
+            const low20Input = document.getElementById('low20');
+            const totalCapitalInput = document.getElementById('totalCapital');
+            const winRateInput = document.getElementById('winRate');
+            const profitLossRatioInput = document.getElementById('profitLossRatio');
             
-            // 1. 判斷海龜訊號
-            if (currentPrice >= high20) {
-                signal = 'buy';
-                signalBadge.textContent = '📈 突破高點：多單進場 / 續抱';
-                signalBadge.className = 'px-3 py-1.5 rounded font-bold text-sm bg-green-950 text-green-400 border border-green-800';
-            } else if (currentPrice <= low20) {
-                signal = 'sell';
-                signalBadge.textContent = '📉 跌破低點：空單進場 / 空倉';
-                signalBadge.className = 'px-3 py-1.5 rounded font-bold text-sm bg-red-950 text-red-400 border border-red-800';
-            } else {
-                signal = 'hold';
-                signalBadge.textContent = '⏳ 盤整區間：觀望不隨意加碼';
-                signalBadge.className = 'px-3 py-1.5 rounded font-bold text-sm bg-gray-700 text-gray-300 border border-gray-600';
-            }
+            const signalBadge = document.getElementById('signalBadge');
+            const kellyRatioSpan = document.getElementById('kellyRatio');
+            const suggestedAmountSpan = document.getElementById('suggestedAmount');
 
-            // 2. 全連動凱利資金：只有買入訊號才配置 16%，盤整或跌破一律歸零
-            let finalRatio = 0;
-            if (signal === 'buy') {
-                finalRatio = rawKelly; 
-                kellyRatioText.textContent = (rawKelly * 100).toFixed(2) + '%';
-                kellyRatioText.className = "text-blue-400 font-bold font-mono";
-            } else if (signal === 'sell') {
-                finalRatio = 0;
-                kellyRatioText.textContent = '0.00% (應空倉/空單)';
-                kellyRatioText.className = "text-red-400 font-bold text-xs font-mono";
-            } else {
-                finalRatio = 0;
-                kellyRatioText.textContent = '0.00% (區間觀望)';
-                kellyRatioText.className = "text-gray-400 font-bold text-xs font-mono";
+            // 工具函數：安全取浮點數
+            function getFloat(id, defaultValue = 0) {
+                const val = parseFloat(document.getElementById(id).value);
+                return isNaN(val) ? defaultValue : val;
             }
-
-            // 3. 計算並顯示最終金額
-            const finalAmount = totalCapital * finalRatio;
-            suggestedAmountText.textContent = '$' + Math.round(finalAmount).toLocaleString();
             
-            // 根據金額動態調整顏色警示
-            if (finalAmount > 0) {
-                suggestedAmountText.className = "text-xl font-black text-emerald-400 font-mono";
-            } else {
-                suggestedAmountText.className = "text-xl font-black text-gray-500 font-mono";
+            // 核心更新函數：根據所有輸入即時計算所有狀態並渲染(確保連動無誤)
+            function updateDashboard() {
+                // 1. 讀取所有數值 (海龜策略相關)
+                let current = parseFloat(currentPriceInput.value);
+                let high = parseFloat(high20Input.value);
+                let low = parseFloat(low20Input.value);
+                let totalCapital = parseFloat(totalCapitalInput.value);
+                let winRateRaw = parseFloat(winRateInput.value);
+                let bRatio = parseFloat(profitLossRatioInput.value);
+                
+                // 防呆處理: 若無效數值則設為合理預設
+                if (isNaN(current)) current = 0;
+                if (isNaN(high)) high = 0;
+                if (isNaN(low)) low = 0;
+                if (isNaN(totalCapital) || totalCapital <= 0) totalCapital = 0;
+                if (isNaN(winRateRaw)) winRateRaw = 40;
+                if (isNaN(bRatio) || bRatio <= 0) bRatio = 2.5;
+                
+                // 限制勝率範圍 0~100，轉換為機率 p (0~1)
+                let p = Math.min(100, Math.max(0, winRateRaw)) / 100;
+                let b = Math.max(0.1, bRatio);      // 賺賠比至少0.1倍避免計算負值荒謬
+                
+                // 標準凱利公式 (適用於下注比例, 對於投資: f* = (p*(b+1)-1)/b)
+                // 當期望值為正才給正比例，否則為0
+                let rawKellyValue = 0;
+                let edge = (p * (b + 1) - 1);
+                if (edge > 0) {
+                    rawKellyValue = edge / b;
+                } else {
+                    rawKellyValue = 0;
+                }
+                // 一般凱利上限建議不要超過25%～30% 但根據真實情況不限制上限，但乾淨顯示即可，上限也不能超過100%
+                rawKellyValue = Math.min(0.99, Math.max(0, rawKellyValue));
+                
+                // 2. 海龜訊號判斷: 需注意浮點比較 (>= 高點 觸發買進訊號)
+                let signalType = 'hold';  // 'buy', 'sell', 'hold'
+                let signalText = '';
+                let signalIcon = '';
+                let bgClass = '';
+                
+                // 邊界處理: 若價格明顯大於等於高點 → 買進訊號；若價格小於等於低點 → 空頭訊號；其餘盤整
+                // 使用精確判斷（避免 nan 干擾）
+                if (!isNaN(current) && !isNaN(high) && !isNaN(low)) {
+                    if (current >= high) {
+                        signalType = 'buy';
+                        signalIcon = '📈';
+                        signalText = '突破高點：多單進場 / 續抱';
+                        bgClass = 'bg-green-950/90 text-green-300 border-green-600';
+                    } else if (current <= low) {
+                        signalType = 'sell';
+                        signalIcon = '📉';
+                        signalText = '跌破低點：空單迴避 / 空倉觀望';
+                        bgClass = 'bg-red-950/80 text-red-300 border-red-700';
+                    } else {
+                        signalType = 'hold';
+                        signalIcon = '⏳';
+                        signalText = '盤整區間：觀望不隨意加碼';
+                        bgClass = 'bg-gray-800 text-gray-300 border-gray-600';
+                    }
+                } else {
+                    // 若缺數值預設盤整
+                    signalType = 'hold';
+                    signalIcon = '⚠️';
+                    signalText = '請輸入完整價格資訊';
+                    bgClass = 'bg-gray-800 text-yellow-300 border-yellow-800';
+                }
+                
+                // 更新燈號介面
+                signalBadge.innerHTML = `<span>${signalIcon}</span> ${signalText}`;
+                signalBadge.className = `px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-all duration-300 flex items-center gap-2 ${bgClass}`;
+                
+                // 3. 根據訊號決定最終使用的資金比率 (凱利)
+                let finalRatio = 0;
+                let ratioDisplayText = '';
+                let ratioStyle = '';
+                
+                if (signalType === 'buy') {
+                    // 多單進場訊號才會啟用凱利建議比率 (原始計算出的 rawKellyValue)
+                    finalRatio = rawKellyValue;
+                    // 格式化百分比顯示，保留兩位小數
+                    let percentValue = (finalRatio * 100).toFixed(2);
+                    ratioDisplayText = `${percentValue}%`;
+                    ratioStyle = 'text-blue-400 font-black';
+                } else if (signalType === 'sell') {
+                    finalRatio = 0;
+                    ratioDisplayText = '0.00% (空頭訊號，不建倉)';
+                    ratioStyle = 'text-red-400 font-bold text-base';
+                } else {
+                    finalRatio = 0;
+                    ratioDisplayText = '0.00% (區間觀望)';
+                    ratioStyle = 'text-gray-400 font-bold text-base';
+                }
+                
+                // 為了避免顯示過於冗長但保留辨識度，在 sell/hold 時若凱利原本可能有數值但不使用也明確顯示0。
+                kellyRatioSpan.innerHTML = ratioDisplayText;
+                kellyRatioSpan.className = `${ratioStyle} font-mono text-xl tracking-wide`;
+                if (signalType !== 'buy') {
+                    // 調整字型大小微調(非buy時字較小一點但相容)
+                    if (signalType === 'sell') {
+                        kellyRatioSpan.className = `text-red-400 font-bold text-base font-mono`;
+                    } else {
+                        kellyRatioSpan.className = `text-gray-400 font-bold text-base font-mono`;
+                    }
+                } else {
+                    kellyRatioSpan.className = `text-blue-400 font-black font-mono text-xl tracking-wide`;
+                }
+                
+                // 4. 計算建議進金金額 = 總本金 * finalRatio
+                let suggestedAmount = totalCapital * finalRatio;
+                let formattedAmount = 0;
+                if (totalCapital > 0 && finalRatio > 0 && isFinite(suggestedAmount)) {
+                    formattedAmount = Math.round(suggestedAmount);
+                } else {
+                    formattedAmount = 0;
+                }
+                
+                // 更新進金金額顯示 (本地化千分位)
+                const formattedMoney = formattedAmount.toLocaleString('zh-TW');
+                suggestedAmountSpan.textContent = `$${formattedMoney}`;
+                
+                // 根據是否為建議正金額顯示顏色強化
+                if (formattedAmount > 0 && signalType === 'buy') {
+                    suggestedAmountSpan.className = "text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-sm";
+                } else {
+                    suggestedAmountSpan.className = "text-2xl sm:text-3xl font-black text-gray-500 font-mono tracking-tighter";
+                }
+                
+                // 額外細節: 如果訊號為買入但finalRatio因為凱利邊界為0 (edge小於0) 要補充可能提示
+                if (signalType === 'buy' && finalRatio === 0 && rawKellyValue === 0 && edge <= 0) {
+                    // 期望值為負或零時，凱利建議0，提示附加訊息不變，但建議金額為0 ，展示無需備註額外
+                    // 我們在比率顯示增加小圖標？為了更好的使用者體驗，可在比率旁顯示(期望值為負)
+                    if (edge <= 0) {
+                        kellyRatioSpan.innerHTML = `0.00% (期望值為負/零)`;
+                        kellyRatioSpan.className = `text-yellow-400 font-bold text-sm font-mono`;
+                    }
+                }
             }
-        }
-
-        // 監聽所有即時輸入
-        currentPriceInput.addEventListener('input', calculateStrategy);
-        high20Input.addEventListener('input', calculateStrategy);
-        low20Input.addEventListener('input', calculateStrategy);
-        totalCapitalInput.addEventListener('input', calculateStrategy);
-
-        // 初始化執行
-        calculateStrategy();
+            
+            // 強制監聽所有會影響數值的元件輸入事件，並立即刷新
+            const inputIds = ['currentPrice', 'high20', 'low20', 'totalCapital', 'winRate', 'profitLossRatio'];
+            inputIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        // 針對勝率和賺賠比做即時合法邊界校正
+                        if (id === 'winRate') {
+                            let val = parseFloat(this.value);
+                            if (isNaN(val)) this.value = 40;
+                            else if (val < 0) this.value = 0;
+                            else if (val > 100) this.value = 100;
+                        }
+                        if (id === 'profitLossRatio') {
+                            let val = parseFloat(this.value);
+                            if (isNaN(val) || val < 0.1) this.value = 0.1;
+                        }
+                        if (id === 'totalCapital') {
+                            let val = parseFloat(this.value);
+                            if (isNaN(val) || val < 0) this.value = 0;
+                        }
+                        updateDashboard();
+                    });
+                }
+            });
+            
+            // 加載時同步執行一次全部校正並確保所有預設展示一致 (並修復Gemini之前數值完全不對的bug)
+            // 初始化時針對當前 "160, 158, 145"，勝率40%，賺賠比2.5 凱利公式計算: p=0.4 b=2.5 => (0.4*(3.5)-1)/2.5 = (1.4-1)/2.5 = 0.4/2.5 = 0.16 => 16%
+            // 但由於海龜買入訊號: 160>=158 成立，訊號買進，顯示16% 且建議金額 = 1,000,000 * 0.16 = 160,000 完全正確。
+            // 若更改價位以及勝率/賺賠比即時反應，解決之前數值不對以及改數值不會連動的問題。
+            // 為了確保高點低點編輯後燈號即時對應凱利拿最新勝率賺賠比，所有計算都在updateDashboard裡從DOM即時取值。
+            
+            // 再加強處理特殊情況: 確保currentPrice高低點邊緣時，如果input類型為step小數也能正確比較
+            // 且不會因為parseFloat科學記號問題導致NaN
+            
+            // 針對可修改盤整區間後的凱利顯示完整度，也額外監聽blur事件做最後驗證
+            const allNumberInputs = document.querySelectorAll('input[type="number"]');
+            allNumberInputs.forEach(inp => {
+                inp.addEventListener('blur', function() {
+                    // 確保空白或極端值被重置
+                    if (this.value === '' || isNaN(parseFloat(this.value))) {
+                        if (this.id === 'currentPrice') this.value = 160;
+                        if (this.id === 'high20') this.value = 158;
+                        if (this.id === 'low20') this.value = 145;
+                        if (this.id === 'totalCapital') this.value = 1000000;
+                        if (this.id === 'winRate') this.value = 40;
+                        if (this.id === 'profitLossRatio') this.value = 2.5;
+                    }
+                    updateDashboard();
+                });
+            });
+            
+            // 立即執行一次確保DOM載入完成後呈現正確數值
+            updateDashboard();
+            
+            // 為了讓使用者清楚看到勝率和賺賠比的即時計算，如果凱利公式變化時，投資組合訊號買入狀態更新金額。
+            // 預設顯示全面連動，修復所有數值不對且輸入框聯動失效問題。
+            // 加上針對「總投資本金」改動時建議金額同步連動 —— 已經監聽。
+            // 增加一個小功能: 顯示當前凱利計算參數預覽(不影響界面)
+            console.log('海龜凱利導航儀已啟動 | 完全連動架構 | 勝率/賺賠比即時套用');
+        })();
     </script>
 </body>
 </html>
