@@ -3,130 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0050 海龜凱利導航儀 | 全自動旗艦版</title>
+    <title>海龜凱利資產導航儀 | 總監概念版</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
 
 <div class="max-w-xl w-full bg-gray-800 rounded-2xl shadow-2xl p-6 border border-gray-700">
-    <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-blue-400">🐢 0050 海龜凱利導航儀</h1>
-        <p class="text-xs text-gray-400">全自動歷史資料連動 | 嚴格海龜邏輯修正版</p>
+    
+    <div class="text-center mb-4">
+        <h1 class="text-2xl font-bold text-blue-400">🐢 海龜凱利資產導航儀</h1>
+        <p class="text-xs text-gray-400">自訂股號數據配置 | 策略資金全自動連動</p>
     </div>
 
-    <div id="status" class="text-center text-green-400 text-sm py-2">✅ 系統已成功載入 0050 真實歷史數據</div>
+    <div class="mb-5 bg-gradient-to-r from-blue-950 to-indigo-950 border border-blue-800 rounded-xl p-4 text-center shadow-inner">
+        <p class="text-sm text-blue-300 font-bold">🔥 想要「全自動免手打」的 Google Sheets 海龜追蹤表？</p>
+        <p class="text-xs text-gray-400 mt-1">內建 0050 真實歷史數據，每天自動幫你算好 N 值與 ATR</p>
+        <a href="https://your-link-here.com" target="_blank" class="mt-2.5 inline-block text-xs bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-6 rounded-full transition-all animate-pulse shadow-md">
+            👉 點此加入專屬社群，免費領取終極模組
+        </a>
+    </div>
 
-    <div class="bg-gray-900 rounded-lg p-4 mb-4">
-        <div class="grid grid-cols-2 gap-3 text-center">
+    <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-gray-700">
+        <div class="text-xs font-bold text-gray-400 mb-3 pb-1 border-b border-gray-800 flex justify-between">
+            <span>⚙️ 標的參數設定（消費者可自行變更）</span>
+            <span class="text-blue-400">股票代號可自訂</span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
-                <div class="text-gray-400 text-xs">📊 今日收盤價 (2026/06/09)</div>
-                <div id="currentPrice" class="text-3xl font-bold text-green-400">103.50</div>
+                <label class="block text-gray-400 text-xs mb-1">📌 自訂股號/名稱</label>
+                <input type="text" id="stockCode" value="0050" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-center font-bold text-yellow-400 focus:outline-none focus:border-blue-500">
             </div>
             <div>
-                <div class="text-gray-400 text-xs">📅 數據更新時間</div>
-                <div id="dataDate" class="text-sm text-gray-400">2026/06/09</div>
+                <label class="block text-gray-400 text-xs mb-1">📊 今日收盤價</label>
+                <input type="number" id="currentPrice" value="103.50" step="0.01" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-center font-mono text-green-400 font-bold focus:outline-none focus:border-blue-500">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">📈 前20日最高點 (突破點)</label>
+                <input type="number" id="high20" value="107.85" step="0.01" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-center font-mono text-yellow-500 focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs mb-1">📉 前20日最低點 (跌破點)</label>
+                <input type="number" id="low20" value="92.45" step="0.01" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-center font-mono text-red-500 focus:outline-none focus:border-blue-500">
             </div>
         </div>
     </div>
 
-    <div class="bg-gray-900 rounded-lg p-4 mb-4">
-        <div class="grid grid-cols-2 gap-3 text-center">
-            <div>
-                <div class="text-gray-400 text-xs">📈 前20日最高點 (突破買)</div>
-                <div id="high20" class="text-2xl font-bold text-yellow-400">107.85</div>
-            </div>
-            <div>
-                <div class="text-gray-400 text-xs">📉 前20日最低點 (跌破賣)</div>
-                <div id="low20" class="text-2xl font-bold text-red-400">92.45</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-gray-900 rounded-lg p-4 mb-4">
+    <div class="bg-gray-900 rounded-lg p-4 mb-4 border border-gray-700">
         <div class="flex justify-between items-center">
-            <span class="text-gray-400 text-sm">🚦 決策燈號</span>
+            <span class="text-gray-400 text-sm font-medium">🚦 策略決策燈號</span>
             <span id="signal" class="px-4 py-2 rounded-xl font-bold text-sm bg-gray-700 text-gray-300 border border-gray-600">
                 ⏳ 計算中...
             </span>
         </div>
     </div>
 
-    <div class="bg-gray-900 rounded-lg p-4">
+    <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
         <div class="flex justify-between items-center mb-3">
             <span class="text-gray-400 text-sm">💰 總投資本金 (台幣)</span>
-            <input type="number" id="totalCapital" value="1000000" step="10000" class="w-36 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right font-mono text-white focus:outline-none focus:border-blue-500">
+            <input type="number" id="totalCapital" value="1000000" step="10000" class="w-36 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-right font-mono text-white focus:outline-none focus:border-blue-500">
         </div>
         <div class="flex justify-between items-center mb-3">
-            <span class="text-gray-400 text-sm">📊 海龜勝率 (可調整)</span>
+            <span class="text-gray-400 text-sm">📊 海龜策略勝率</span>
             <div class="flex items-center gap-2">
-                <input type="number" id="winRate" value="40" step="1" min="1" max="100" class="w-20 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right font-mono text-white focus:outline-none focus:border-blue-500">
-                <span class="text-xs">%</span>
+                <input type="number" id="winRate" value="40" step="1" min="1" max="100" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-right font-mono text-white focus:outline-none focus:border-blue-500">
+                <span class="text-xs text-gray-400">%</span>
             </div>
         </div>
         <div class="flex justify-between items-center mb-4">
-            <span class="text-gray-400 text-sm">📈 賺賠比 (可調整)</span>
-            <input type="number" id="profitLossRatio" value="2.5" step="0.1" min="0.5" class="w-20 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right font-mono text-white focus:outline-none focus:border-blue-500">
+            <span class="text-gray-400 text-sm">📈 預估賺賠比</span>
+            <input type="number" id="profitLossRatio" value="2.5" step="0.1" min="0.5" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-right font-mono text-white focus:outline-none focus:border-blue-500">
         </div>
-        <div class="border-t border-gray-700 pt-3">
+        
+        <div class="border-t border-gray-800 pt-3">
             <div class="flex justify-between items-center">
                 <span class="text-cyan-400 font-medium">💡 建議下單資金比率</span>
                 <span id="kellyRatio" class="text-2xl font-bold text-blue-400">0%</span>
             </div>
             <div class="flex justify-between items-center mt-2">
-                <span class="text-emerald-400 font-medium">💰 今日建議進金金額</span>
+                <span class="text-emerald-400 font-medium">💰 建議進金總金額</span>
                 <span id="suggestedAmount" class="text-2xl font-bold text-emerald-400">$0</span>
             </div>
         </div>
     </div>
-    
-    <div class="text-center text-[10px] text-gray-500 mt-4 pt-2 border-t border-gray-700">
-        📌 資料來源：台灣證券交易所歷史行情數據修正版<br>
-        依據海龜法則：今日收盤價與前 20 個交易日之區間高低點進行即時策略連動。
+
+    <div class="mt-5 pt-4 border-t border-gray-700 text-center">
+        <div class="bg-gray-900 rounded-xl p-3 border border-gray-700 inline-block w-full">
+            <p class="text-[11px] text-gray-400 uppercase tracking-wider">🛠️ SYSTEM DEVELOPER & BUSINESS COOPERATION</p>
+            <p class="text-sm text-gray-200 mt-1 font-bold">【AEMS 自動化數位執行管理系統】</p>
+            <p class="text-xs text-blue-400 mt-1 font-mono">商務/廣告對接信箱：your-email@gmail.com</p>
+            <div class="mt-2 text-[11px] text-gray-500 bg-gray-950 rounded py-1 px-2 inline-block">
+                廣告版位招募中 — 歡迎各大券商、財經媒體、投顧洽詢合作
+            </div>
+        </div>
     </div>
+
 </div>
 
 <script>
-    const historicalData = [
-        { date: "2026/05/13", close: 98.20, high: 99.15, low: 97.80 },
-        { date: "2026/05/14", close: 99.05, high: 99.50, low: 98.60 },
-        { date: "2026/05/15", close: 100.30, high: 100.80, low: 99.70 },
-        { date: "2026/05/16", close: 99.85, high: 100.20, low: 99.40 },
-        { date: "2026/05/19", close: 100.50, high: 101.00, low: 100.10 },
-        { date: "2026/05/20", close: 101.20, high: 101.60, low: 100.70 },
-        { date: "2026/05/21", close: 102.00, high: 102.50, low: 101.30 },
-        { date: "2026/05/22", close: 103.10, high: 103.80, low: 102.60 },
-        { date: "2026/05/23", close: 104.20, high: 104.90, low: 103.50 },
-        { date: "2026/05/26", close: 105.00, high: 105.50, low: 104.30 },
-        { date: "2026/05/27", close: 106.10, high: 106.80, low: 105.40 },
-        { date: "2026/05/28", close: 107.20, high: 107.85, low: 106.50 },
-        { date: "2026/05/29", close: 106.80, high: 107.20, low: 106.00 },
-        { date: "2026/06/01", close: 105.50, high: 106.00, low: 104.80 },
-        { date: "2026/06/02", close: 104.30, high: 104.90, low: 103.60 },
-        { date: "2026/06/03", close: 103.80, high: 104.20, low: 103.00 },
-        { date: "2026/06/04", close: 102.90, high: 103.50, low: 102.20 },
-        { date: "2026/06/05", close: 102.00, high: 102.80, low: 101.50 },
-        { date: "2026/06/08", close: 103.20, high: 103.90, low: 102.70 },
-        { date: "2026/06/09", close: 103.50, high: 104.00, low: 102.80 }
-    ];
-    
-    let maxHigh = 0;
-    let minLow = Infinity;
-    for (let i = 0; i < historicalData.length - 1; i++) {
-        const day = historicalData[i];
-        if (day.high > maxHigh) maxHigh = day.high;
-        if (day.low < minLow) minLow = day.low;
-    }
-    
-    const todayData = historicalData[historicalData.length - 1];
-    const currentPrice = todayData.close;
-    const latestDate = todayData.date;
-    
-    document.getElementById('currentPrice').innerText = currentPrice.toFixed(2);
-    document.getElementById('high20').innerText = maxHigh.toFixed(2);
-    document.getElementById('low20').innerText = minLow.toFixed(2);
-    document.getElementById('dataDate').innerText = latestDate;
-    
     function updateSystem() {
+        const stockCode = document.getElementById('stockCode').value || '0050';
+        const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
+        const maxHigh = parseFloat(document.getElementById('high20').value) || 0;
+        const minLow = parseFloat(document.getElementById('low20').value) || 0;
+        
         const winRate = parseFloat(document.getElementById('winRate').value) || 40;
         const profitLossRatio = parseFloat(document.getElementById('profitLossRatio').value) || 2.5;
         const totalCapital = parseFloat(document.getElementById('totalCapital').value) || 0;
@@ -135,12 +118,13 @@
         let signalClass = '';
         let isBuySignal = false;
         
-        if (currentPrice >= maxHigh) {
-            signalText = '📈 突破高點：多單進場 / 續抱';
+        // 核心策略邏輯判斷
+        if (currentPrice >= maxHigh && maxHigh > 0) {
+            signalText = `📈 突破高點：${stockCode} 多單進場`;
             signalClass = 'bg-green-950 text-green-400 border border-green-700';
             isBuySignal = true;
-        } else if (currentPrice <= minLow) {
-            signalText = '📉 跌破低點：空單迴避 / 空倉觀望';
+        } else if (currentPrice <= minLow && minLow > 0) {
+            signalText = `📉 跌破低點：${stockCode} 空倉觀望`;
             signalClass = 'bg-red-950 text-red-400 border border-red-700';
         } else {
             signalText = '⏳ 盤整區間：觀望不隨意加碼';
@@ -151,6 +135,7 @@
         signalEl.innerText = signalText;
         signalEl.className = `px-4 py-2 rounded-xl font-bold text-sm ${signalClass}`;
         
+        // 凱利公式計算
         const p = Math.min(1, Math.max(0, winRate / 100));
         const b = profitLossRatio;
         let kelly = 0;
@@ -160,30 +145,25 @@
             if (edge > 0) {
                 kelly = edge / b;
             }
-            if (kelly > 0.5) kelly = 0.5;
+            if (kelly > 0.5) kelly = 0.5; // 風控上限 50%
         }
         
         const kellyRatioEl = document.getElementById('kellyRatio');
         const suggestedAmountEl = document.getElementById('suggestedAmount');
         
         kellyRatioEl.innerText = (kelly * 100).toFixed(2) + '%';
-        
-        if (kelly > 0) {
-            kellyRatioEl.className = "text-2xl font-bold text-blue-400";
-        } else {
-            kellyRatioEl.className = "text-2xl font-bold text-gray-500";
-        }
+        kellyRatioEl.className = kelly > 0 ? "text-2xl font-bold text-blue-400" : "text-2xl font-bold text-gray-500";
         
         const suggestedAmount = totalCapital * kelly;
         suggestedAmountEl.innerText = '$' + Math.round(suggestedAmount).toLocaleString();
-        
-        if (suggestedAmount > 0) {
-            suggestedAmountEl.className = "text-2xl font-bold text-emerald-400";
-        } else {
-            suggestedAmountEl.className = "text-2xl font-bold text-gray-500";
-        }
+        suggestedAmountEl.className = suggestedAmount > 0 ? "text-2xl font-bold text-emerald-400" : "text-2xl font-bold text-gray-500";
     }
     
+    // 綁定所有輸入框的即時監聽器
+    document.getElementById('stockCode').addEventListener('input', updateSystem);
+    document.getElementById('currentPrice').addEventListener('input', updateSystem);
+    document.getElementById('high20').addEventListener('input', updateSystem);
+    document.getElementById('low20').addEventListener('input', updateSystem);
     document.getElementById('totalCapital').addEventListener('input', updateSystem);
     document.getElementById('winRate').addEventListener('input', updateSystem);
     document.getElementById('profitLossRatio').addEventListener('input', updateSystem);
