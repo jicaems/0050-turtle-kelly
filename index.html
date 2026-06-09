@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0050 海龜凱利自動導航儀</title>
-    <!-- 引入 Tailwind CSS 實現科技感黑底風格 -->
+    <title>0050 海龜凱利自動導航儀 1.2</title>
+    <!-- 引入 Tailwind CSS 實現高質感黑底風格 -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center py-10 px-4">
@@ -17,7 +17,14 @@
             <h1 class="text-2xl font-bold text-blue-400 flex justify-center items-center gap-2">
                 📊 0050 海龜凱利導航儀
             </h1>
-            <p class="text-xs text-gray-400 mt-1">Vibe Coding 華強北 1.1 全連動版</p>
+            <p class="text-xs text-gray-400 mt-1">Vibe Coding 華強北 1.2 全功能旗艦版</p>
+        </div>
+
+        <!-- 輔助查詢工具 -->
+        <div class="mb-4 text-center">
+            <a href="https://tw.stock.yahoo.com/quote/0050.TW" target="_blank" class="text-xs bg-gray-700 hover:bg-gray-600 text-blue-300 px-3 py-1.5 rounded-full inline-flex items-center gap-1 transition-all">
+                🔍 點此查詢 0050 今日真實收盤價 (Yahoo股市)
+            </a>
         </div>
 
         <!-- 區塊一：海龜策略訊號輸入 -->
@@ -26,7 +33,7 @@
             
             <div class="space-y-3 text-sm">
                 <div class="flex justify-between items-center">
-                    <label class="text-gray-300">當前 0050 收盤價：</label>
+                    <label class="text-gray-300">當前 0050 收盤價 (可手動修改)：</label>
                     <input type="number" id="currentPrice" value="160" step="0.1" class="w-28 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono focus:outline-none focus:border-blue-500">
                 </div>
                 <div class="flex justify-between items-center">
@@ -54,7 +61,7 @@
             
             <div class="space-y-3 text-sm">
                 <div class="flex justify-between items-center">
-                    <label class="text-gray-300">總投資本金 (台幣)：</label>
+                    <label class="text-gray-300">總投資本金 (台幣，可修改)：</label>
                     <input type="number" id="totalCapital" value="1000000" class="w-36 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-right text-white font-mono focus:outline-none focus:border-blue-500">
                 </div>
                 <div class="flex justify-between items-center text-gray-400 text-xs">
@@ -72,7 +79,7 @@
                     <span id="kellyRatio" class="text-blue-400 font-bold font-mono">16.00%</span>
                 </div>
                 
-                <!-- 終極建議下單金額（會隨訊號連動歸零） -->
+                <!-- 今日建議下單金額 -->
                 <div class="pt-2 flex justify-between items-center">
                     <span class="text-gray-200 font-medium">今日建議進金金額：</span>
                     <span id="suggestedAmount" class="text-xl font-black text-emerald-400 font-mono">$160,000</span>
@@ -82,7 +89,7 @@
 
     </div>
 
-    <!-- 核心計算與全連動邏輯晶片 -->
+    <!-- 核心全連動晶片邏輯 -->
     <script>
         const currentPriceInput = document.getElementById('currentPrice');
         const high20Input = document.getElementById('high20');
@@ -93,9 +100,10 @@
         const kellyRatioText = document.getElementById('kellyRatio');
         const suggestedAmountText = document.getElementById('suggestedAmount');
 
+        // 固定凱利參數
         const p = 0.4;
         const b = 2.5;
-        const rawKelly = (b * p - (1 - p)) / b; 
+        const rawKelly = (b * p - (1 - p)) / b; // 0.16
 
         function calculateStrategy() {
             const currentPrice = parseFloat(currentPriceInput.value) || 0;
@@ -105,6 +113,7 @@
 
             let signal = 'hold'; 
             
+            // 1. 判斷海龜訊號
             if (currentPrice >= high20) {
                 signal = 'buy';
                 signalBadge.textContent = '📈 突破高點：多單進場 / 續抱';
@@ -119,6 +128,7 @@
                 signalBadge.className = 'px-3 py-1.5 rounded font-bold text-sm bg-gray-700 text-gray-300 border border-gray-600';
             }
 
+            // 2. 全連動凱利資金：只有買入訊號才配置 16%，盤整或跌破一律歸零
             let finalRatio = 0;
             if (signal === 'buy') {
                 finalRatio = rawKelly; 
@@ -134,9 +144,11 @@
                 kellyRatioText.className = "text-gray-400 font-bold text-xs font-mono";
             }
 
+            // 3. 計算並顯示最終金額
             const finalAmount = totalCapital * finalRatio;
             suggestedAmountText.textContent = '$' + Math.round(finalAmount).toLocaleString();
             
+            // 根據金額動態調整顏色警示
             if (finalAmount > 0) {
                 suggestedAmountText.className = "text-xl font-black text-emerald-400 font-mono";
             } else {
@@ -144,11 +156,13 @@
             }
         }
 
+        // 監聽所有即時輸入
         currentPriceInput.addEventListener('input', calculateStrategy);
         high20Input.addEventListener('input', calculateStrategy);
         low20Input.addEventListener('input', calculateStrategy);
         totalCapitalInput.addEventListener('input', calculateStrategy);
 
+        // 初始化執行
         calculateStrategy();
     </script>
 </body>
