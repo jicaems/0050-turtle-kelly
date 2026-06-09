@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0050 海龜凱利自動導航儀</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1 { color: #58a6ff; text-align: center; font-size: 24px; }
+        h2 { color: #79c0ff; font-size: 18px; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+        .signal-buy { color: #3fb950; font-weight: bold; font-size: 20px; }
+        .signal-sell { color: #f85149; font-weight: bold; font-size: 20px; }
+        .data-row { display: flex; justify-content: space-between; margin: 12px 0; }
+        input {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            width: 120px;
+            text-align: right;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📊 0050 海龜凱利導航儀</h1>
+    <p style="text-align: center; color: #8b949e;">Vibe Coding 華強北 1.0 版</p>
+
+    <!-- 1. 策略訊號面板 -->
+    <div class="card">
+        <h2>🚨 今日海龜策略訊號</h2>
+        <div class="data-row">
+            <span>當前 0050 收盤價：</span>
+            <input type="number" id="currentPrice" value="160" oninput="calculateStrategy()">
+        </div>
+        <div class="data-row">
+            <span>20日最高點 (突破買)：</span>
+            <input type="number" id="high20" value="158" oninput="calculateStrategy()">
+        </div>
+        <div class="data-row">
+            <span>20日最低點 (跌破賣)：</span>
+            <input type="number" id="low20" value="145" oninput="calculateStrategy()">
+        </div>
+        <div class="data-row" style="margin-top: 20px; background: #0d1117; padding: 10px; border-radius: 6px;">
+            <span>【決策燈號】</span>
+            <span id="turtleSignal" class="signal-buy">計算中...</span>
+        </div>
+    </div>
+
+    <!-- 2. 凱利公式部位計算機 -->
+    <div class="card">
+        <h2>🧮 凱利公式配位計</h2>
+        <div class="data-row">
+            <span>總投資本金 (台幣)：</span>
+            <input type="number" id="totalCapital" value="1000000" oninput="calculateStrategy()">
+        </div>
+        <div class="data-row">
+            <span>海龜勝率 (預設)：</span>
+            <span>40%</span>
+        </div>
+        <div class="data-row">
+            <span>賺賠比 (預設)：</span>
+            <span>2.5 倍</span>
+        </div>
+        <div class="data-row" style="margin-top: 20px; background: #0d1117; padding: 10px; border-radius: 6px; border-left: 4px solid #58a6ff;">
+            <span>建議下單資金比率：</span>
+            <span id="kellyRatio" style="color: #58a6ff; font-weight: bold; font-size: 18px;">16.00%</span>
+        </div>
+        <div class="data-row">
+            <span>今日建議買進金額：</span>
+            <span id="suggestedCash" style="color: #ffffff; font-weight: bold; font-size: 18px;">$160,000</span>
+        </div>
+    </div>
+
+    <script>
+        function calculateStrategy() {
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
+            const high20 = parseFloat(document.getElementById('high20').value) || 0;
+            const low20 = parseFloat(document.getElementById('low20').value) || 0;
+            const signalBox = document.getElementById('turtleSignal');
+
+            if (currentPrice >= high20) {
+                signalBox.innerHTML = "📈 突破高點：多單進場 / 續抱";
+                signalBox.className = "signal-buy";
+            } else if (currentPrice <= low20) {
+                signalBox.innerHTML = "📉 跌破低點：空單進場 / 空倉";
+                signalBox.className = "signal-sell";
+            } else {
+                signalBox.innerHTML = "⏳ 區間震盪：觀望 / 維持原部位";
+                signalBox.className = "";
+                signalBox.style.color = "#8b949e";
+            }
+
+            // 凱利公式計算：W = 0.4, R = 2.5
+            const W = 0.40;
+            const R = 2.5;
+            let kelly = W - ((1 - W) / R); 
+            if (kelly < 0) kelly = 0;
+
+            const totalCapital = parseFloat(document.getElementById('totalCapital').value) || 0;
+            const finalCash = totalCapital * kelly;
+
+            document.getElementById('kellyRatio').innerHTML = (kelly * 100).toFixed(2) + "%";
+            document.getElementById('suggestedCash').innerHTML = "$" + finalCash.toLocaleString(undefined, {maximumFractionDigits: 0});
+        }
+        calculateStrategy();
+    </script>
+</body>
+</html>
